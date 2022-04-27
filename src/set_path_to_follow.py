@@ -1,211 +1,143 @@
-#!/usr/bin/env python3
-
-# =============================================================================
-# Peter G. Adamczyk 
-# 2018-10
-# Updated 2021-02-27
-# =============================================================================
-
 import rospy
 import traceback 
 import numpy as np
-# IMPORT the custom message: 
-# we import it "from" the ROS package we created it in (here "me439robot") with an extension of .msg ...
-# and actually import the message type by name (here "ME439WheelSpeeds")
 from mobrob_util.msg import ME439PathSpecs
 from std_msgs.msg import Bool
-import me439_mobile_robot_class_v02 as m439rbt  # REMEMBER to call the right file (version, or use the _HWK if needed)
+import me439_mobile_robot_class_v02 as m439rbt
 
-# =============================================================================
-#     Set up a time course of commands
-# =============================================================================
-
-# =============================================================================
-# # NEW: Determine paths by lines, arcs, pivots and pauses, and create a 
-# #  "robot" object to plan it for you. 
-# =============================================================================
-
-# Get parameters from rosparam
-wheel_width = rospy.get_param('/wheel_width_model') # All you have when planning is a model - you never quite know the truth! 
-body_length = rospy.get_param('/body_length')
-wheel_diameter = rospy.get_param('/wheel_diameter_model')
-wheel_radius = wheel_diameter/2.0
-
-# Create a mobile robot object from the Imported module "me439_mobile_robot_class"
-robot = m439rbt.robot(wheel_width, body_length, wheel_radius)
+WHEEL_WIDTH = rospy.get_param('/wheel_width_model')
+BODY_LENGTH = rospy.get_param('/body_length')
+WHEEL_DIAMETER = rospy.get_param('/wheel_diameter_model')
+WHEEL_RADIUS = WHEEL_DIAMETER/2.0
+ARENA_SIZE_X = 1.0
+ARENA_SIZE_Y = 1.0
+PATH_FILE_SVG = '/home/pi/catkin_ws/src/moblightdraw/src/SVGtest2.svg'
 
 
-###############################################################################
-# PATH_SPECS for a Closed-Loop path-following controller.
-# Each segment is defined as an Arc with parameters: 
-# (Xorigin, Yorigin, Theta_init, Rsigned, Length)
-#-   Xorigin and Yorigin are in the World frame
-#-   Theta_init is in the World frame, measuring the angle of the intended ROBOT FORWARD 
-#     direction as a +z rotation from the +Yworld axis
-#-   Rsigned should be + for Left turn, - for Right turn, or +/- infinity (np.inf (numpy.inf)) for a Line
-#-   Length is a path Arclength for this segment. (for a Line, the line's length)
-###############################################################################
-# SEVERAL EXAMPLES of Direct path programming: 
-# the last one not commented will be executed. 
-###############################################################################
-## 1 m circle starting at [0.5,0.5]
-#path_specs = np.array([[0.5,0.5,0,1,2*np.pi*1]])
-## 1 m circle starting at [-2,-2]
-#path_specs = np.array([[-2,-2,0,1,2*np.pi*1]])
-## Picture of a cart with two wheels
-#path_specs = np.array([[0,0,0,np.inf,1],[0,1,-np.pi/2,np.inf,3], [3,1,-np.pi,np.inf,1], [3,0,np.pi/2,np.inf,0.5],[2.5,0,np.pi/2,0.5,2*np.pi*0.5],[2.5,0,np.pi/2,np.inf,2],[0.5,0,np.pi/2,0.5,2*np.pi*0.5], [0.5,0,np.pi/2,np.inf,0.5]])
+def convert_svg_to_path_specs(svg_file, xlength=ARENA_SIZE_X, ylength=ARENA_SIZE_Y):
+    svg_coords = parse_svg_for_paths(svg_file)[0]
+    scaled_coords = scale_coords_to_arena(svg_coords, xlength, ylength)
+    path_specs = convert_coords_to_path_specs(scaled_coords)
+    
+    return path_specs
 
-###############################################################################
-# ALTERNATIVELY, use Geometric Constructors to automatically make the specs: 
-# These functions are in "mobile_robot_class_xx.py": 
-#   specify_line(x0,y0,xf,yf)
-#   specify_arc(x0,y0,xf,yf,R,way='short')     # or way='long' (do you want the "short way" or the "long way" around the circle?)
-###############################################################################
-# 1 m circle starting at [0.5,0.5], using geometric constructor functions. 
-# NOTE that a full circle is a degenerate case, so it has to be done in two halves: 
-# path_specs = np.array([robot.specify_arc(0.5,0.5,2.5,0.5,-1,way='long'),robot.specify_arc(2.5,0.5,0.5,0.5,-1,way='long')] )
-## 1 m circle starting at [-2,-2], using geometric constructor functions. 
-## NOTE that a full circle is a degenerate case, so it has to be done in two halves: 
-#path_specs = np.array([robot.specify_arc(-2,-2,0,-2,-1,way='long'),robot.specify_arc(0,-2,-2,-2,-1,way='long')] )
-## Arc of radius 1 m from [0.3, -0.2] to [0,0.3] and then line back to [0,0]:
-#path_specs = np.array([robot.specify_arc(0.3,-0.2,0.0,0.3,1.0,way='short'), robot.specify_line(0.0,0.3,0.0,0.0)])
+def parse_svg_for_paths(svg_file):
+    all_coords = []
+    all_colors = []
+    with open(svg_file,'r') as svgfile:
+        for line in svgfile:
+            l = line.strip()
+            if(l[0:3] == 'd="'):
+                coords = l[4:-1].split(" ")
+                coords = [float(x) for x in coords][:2]
+                all_coords.append(coords)
+            elif(l[0:12] == 'stroke="rgb('):
+                color = l[12:-2].split(" ")
+                color = [int(x.strip(",")) for x in color]
+                all_colors.append(color)
+                
+    return(np.array(all_coords), np.array(all_colors))
 
-###############################################################################
-## Interesting "bug" demos: STUDENTS: THINK ABOUT WHY THESE BEHAVE ODDLY (if they do):  
-###############################################################################
-## line from [0,-1] to [0,-0.1] 
-path_specs = np.array([[0,-1,0,np.inf,0.9]])
-## Line from [-1,3] to [3,3]:
-#path_specs = np.array([[-1,3,-np.pi/2,np.inf,5]])
-## Line from [-1,-1] to [-1,3]:
-#path_specs = np.array([[-1,-1,0,np.inf,4]])
+def scale_coords_to_arena(coords, dx, dy):
+    xsvg = coords[:,0]
+    ysvg = coords[:,1]  # Note that Y is Down in SVG!
+    
+    xmin = np.min(xsvg)
+    xmax = np.max(xsvg)
+    xrng = xmax - xmin
+    xctr = xmin + xrng/2
+    ymin = np.min(ysvg)
+    ymax = np.max(ysvg)
+    yrng = ymax - ymin
+    yctr = ymin + yrng/2
 
+    # Shift and scale. 
+    k = min([dx/xrng, dy/yrng])
+    yscaled = -1*(ysvg-ymax)*k   # Note that Y is Down in SVG!
+    xscaled = (xsvg-xmin)*k
+    
+    scaled_coords = np.vstack((xscaled,yscaled)).transpose()
+    
+    return scaled_coords
 
-###############################################################################
-## ALTERNATIVELY: get path specs from an SVG file: 
-#   uses "parse_svg_for_path_following", a program that reads SVG images and converts the lines to waypoints. 
-# NOTE: The "get_param" line is used to get the full path to the SVG file 
-#   This is only necessary to get around a problem with locating files (unknown underlying reason). 
-#   The Parameter is set in the Launch file! 
-###############################################################################
-# import parse_svg_for_path_following as parsesvg    # This is a program that sorts out SVG files to find their waypoints. 
-# path_file_svg = '/home/pi/catkin_ws/src/moblightdraw/src/SVGtest.svg'    # Get the parameter that has the file's full path
-# path_specs = parsesvg.convert_svg_to_path_specs(path_file_svg, xlength=1., ylength=1.)    # Parse the SVG file for "d=" lines (paths)
+def convert_coords_to_path_specs(coords):
+## path_specs are:  [Xorigin, Yorigin, Theta_init, Rsigned, Length]
 
+    coords = np.append([[0.,0.]],coords,axis=0)  # start at 0
+    coords = np.append(coords,[[0.,0.]],axis=0)  # end at 0
+    
+    path_specs = np.ndarray((0,5)).astype(float)
+    for ii in range(1,len(coords)):
+        xorigin = coords[ii-1][0]
+        yorigin = coords[ii-1][1]
+        displacement = coords[ii]-coords[ii-1]
+        angle = np.arctan2(-displacement[0], displacement[1])   # Remember the angle is measured from the +y axis. 
+        rsigned = np.inf
+        length = np.linalg.norm(displacement)
+        
+        path_specs = np.append(path_specs, [[xorigin, yorigin, angle, rsigned, length]], axis=0)
+    
+    return path_specs
 
-####     CODE HERE: 
-## Create other Paths of your own design. ##
-####    CODE END
-
-
-
-###############################################################################
-# FIX THE PATH_SPECS to drive a line from the initial position to 
-# the path starting point, before beginning the specified path 
-# (if not already there): 
-if not all( path_specs[0,0:2] == robot.r_center_world) :
-    path_specs = np.append(np.array([robot.specify_line(robot.r_center_world[0], robot.r_center_world[1],path_specs[0,0],path_specs[0,1])]),path_specs,axis=0)
-###############################################################################
-
-##################################################################
-# Run the Publisher
-##################################################################
-# initialize the current "segment" to be the first one (index 0) # (you could skip segments if you wanted to)
-segment_number = 0  # for Segmented path following. 
-path_complete = Bool()
-# =============================================================================
-# # END of new section on planning with line and arcs
-# =============================================================================
-
-
-# Publish desired wheel speeds at the appropriate time. 
 def talker(): 
     global path_specs, segment_number, path_complete
-    # Launch a node called "set_path_to_follow"
+
     rospy.init_node('set_path_to_follow', anonymous=False)
 
-    # Create the publisher. Name the topic "path_segment_spec", with message type "ME439PathSpecs"
     pub_segment_specs = rospy.Publisher('/path_segment_spec', ME439PathSpecs, queue_size=1)
-    
-    # Create the publisher. Name the topic "path_complete", with message type "Bool"
+
     pub_path_complete = rospy.Publisher('/path_complete', Bool, queue_size=1)
 
-    # Create a publisher that listens for messages on the "segment_complete" topic
     sub_complete = rospy.Subscriber('/segment_complete', Bool, increment_segment)
-    
-    # Declare the message to publish. 
-    # Here we use one of the message name types we Imported, and add parentheses to call it as a function. 
-    # We could also put data in it right away using . 
+
     path_segment_spec = ME439PathSpecs()
    
-
-    
-    # set up a rate basis to keep it on schedule.
     r = rospy.Rate(10) # N Hz
     try: 
-        # start a loop 
         while not rospy.is_shutdown():
             path_segment_spec.x0 = path_specs[segment_number,0]
             path_segment_spec.y0 = path_specs[segment_number,1]
             path_segment_spec.theta0 = path_specs[segment_number,2]
             path_segment_spec.Radius = path_specs[segment_number,3]
             path_segment_spec.Length = path_specs[segment_number,4]
-            # Actually publish the message
-            pub_segment_specs.publish(path_segment_spec)
-            # Log the info (optional)
-#            rospy.loginfo(pub_speeds)    
-            
+            pub_segment_specs.publish(path_segment_spec) 
             
             pub_path_complete.publish(path_complete)
-            # If the path is complete, exit this node by "return"ing from this function.
             if path_complete.data:
                 return
             
             r.sleep()
-#        
-#        # Here step through the settings. 
-#        for stage in range(0,len(stage_settings_array)):  # len gets the length of the array (here the number of rows)
-#            # Set the desired speeds
-#            dur = stage_settings_array[stage,0]
-#            msg_out.v_left = stage_settings_array[stage,1]
-#            msg_out.v_right = stage_settings_array[stage,2]
-#            # Actually publish the message
-#            pub_speeds.publish(msg_out)
-#            # Log the info (optional)
-#            rospy.loginfo(pub_speeds)       
-#            
-#            # Sleep for just long enough to reach the next command. 
-#            sleep_dur = dur - (rospy.get_rostime()-t_start).to_sec()
-#            sleep_dur = max(sleep_dur, 0.)  # In case there was a setting with zero duration, we will get a small negative time. Don't use negative time. 
-#            rospy.sleep(sleep_dur)
-#        
+
     except Exception:
         traceback.print_exc()
         pass
         
-        
-        
-
-###############################################################################
-# Callback to increment the segment if the 
-###############################################################################
 def increment_segment(msg_in):
-    # get access to the globals set at the top
     global segment_number, path_complete
 
-    # Increment every time a segment completes
     segment_number = segment_number + 1
     
-    # If that was the last segment (new segment number exceeds the indices available), decrement so as not to confuse the system, and tell the downstream programs that the path is complete 
+    # If that was the last segment (new segment number exceeds the indices 
+    # available), decrement so as not to confuse the system, and tell the 
+    # downstream programs that the path is complete 
     if segment_number >= path_specs.shape[0]:
         path_complete.data = True
         segment_number = segment_number - 1
-    else:  # Else no modifications, just make sure the downstream programs that the path is not yet complete. 
+    else: 
         path_complete.data = False
     
 
+robot = m439rbt.robot(WHEEL_WIDTH, BODY_LENGTH, WHEEL_RADIUS)
 
+path_specs = convert_svg_to_path_specs(PATH_FILE_SVG, xlength=1., ylength=1.)
 
+# fix the PATH_SPECS to drive a line from the initial position to start of path
+if not all( path_specs[0,0:2] == robot.r_center_world) :
+    path_specs = np.append(np.array([robot.specify_line(robot.r_center_world[0], robot.r_center_world[1],path_specs[0,0],path_specs[0,1])]),path_specs,axis=0)
+
+segment_number = 0
+path_complete = Bool()
+    
 if __name__ == '__main__':
     try: 
         talker()
