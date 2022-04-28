@@ -5,6 +5,7 @@ import numpy as np
 from mobrob_util.msg import ME439Color
 import qwiic_led_stick
 import sys
+import traceback
    
 
 def talker():
@@ -15,9 +16,11 @@ def talker():
             file=sys.stderr)
         return
 
-    print("\nLED Stick ready!")    
+    print("\nLED Stick ready!")  
 
     my_stick.set_all_LED_brightness(15)
+
+    rospy.spin()
     
 
 def set_led_color(msg_in):
