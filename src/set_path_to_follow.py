@@ -102,9 +102,9 @@ def talker():
     r = rospy.Rate(10) # N Hz
     try: 
         while not rospy.is_shutdown():
-            color_spec.red = path_specs[segment_number, 0]
-            color_spec.green = path_specs[segment_number, 1]
-            color_spec.blue = path_specs[segment_number, 2]
+            color_spec.red = colors[segment_number, 0]
+            color_spec.green = colors[segment_number, 1]
+            color_spec.blue = colors[segment_number, 2]
             pub_colors.publish(color_spec)
 
             path_segment_spec.x0 = path_specs[segment_number,0]
