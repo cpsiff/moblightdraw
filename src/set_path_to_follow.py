@@ -102,11 +102,6 @@ def talker():
     r = rospy.Rate(10) # N Hz
     try: 
         while not rospy.is_shutdown():
-            color_spec.red = colors[segment_number, 0]
-            color_spec.green = colors[segment_number, 1]
-            color_spec.blue = colors[segment_number, 2]
-            pub_colors.publish(color_spec)
-
             path_segment_spec.x0 = path_specs[segment_number,0]
             path_segment_spec.y0 = path_specs[segment_number,1]
             path_segment_spec.theta0 = path_specs[segment_number,2]
@@ -117,6 +112,11 @@ def talker():
             pub_path_complete.publish(path_complete)
             if path_complete.data:
                 return
+
+            color_spec.red = colors[segment_number, 0]
+            color_spec.green = colors[segment_number, 1]
+            color_spec.blue = colors[segment_number, 2]
+            pub_colors.publish(color_spec)
             
             r.sleep()
 
@@ -133,8 +133,6 @@ def increment_segment(msg_in):
     # available), decrement so as not to confuse the system, and tell the 
     # downstream programs that the path is complete 
     if segment_number >= path_specs.shape[0]:
-        print("segment number", segment_number)
-        print("path_specs shape", path_specs.shape[0])
         path_complete.data = True
         segment_number = segment_number - 1
     else: 
