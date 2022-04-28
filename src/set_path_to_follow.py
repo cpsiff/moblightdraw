@@ -133,6 +133,8 @@ def increment_segment(msg_in):
     # available), decrement so as not to confuse the system, and tell the 
     # downstream programs that the path is complete 
     if segment_number >= path_specs.shape[0]:
+        print("segment number", segment_number)
+        print("path_specs shape", path_specs.shape[0])
         path_complete.data = True
         segment_number = segment_number - 1
     else: 
