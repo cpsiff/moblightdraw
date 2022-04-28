@@ -4,6 +4,7 @@ import rospy
 import traceback 
 import numpy as np
 from mobrob_util.msg import ME439PathSpecs
+from mobrob_util.msg import ME439Color
 from std_msgs.msg import Bool
 import me439_mobile_robot_class_v02 as m439rbt
 
@@ -88,15 +89,24 @@ def talker():
 
     pub_segment_specs = rospy.Publisher('/path_segment_spec', ME439PathSpecs, queue_size=1)
 
+    pub_colors = rospy.Publisher('/led_color', ME439Color, queue_size=1)
+
     pub_path_complete = rospy.Publisher('/path_complete', Bool, queue_size=1)
 
     sub_complete = rospy.Subscriber('/segment_complete', Bool, increment_segment)
 
     path_segment_spec = ME439PathSpecs()
+
+    color_spec = ME439Color()
    
     r = rospy.Rate(10) # N Hz
     try: 
         while not rospy.is_shutdown():
+            color_spec.red = path_specs[segment_number, 0]
+            color_spec.green = path_specs[segment_number, 1]
+            color_spec.blue = path_specs[segment_number, 2]
+            pub_colors.publish(color_spec)
+
             path_segment_spec.x0 = path_specs[segment_number,0]
             path_segment_spec.y0 = path_specs[segment_number,1]
             path_segment_spec.theta0 = path_specs[segment_number,2]
