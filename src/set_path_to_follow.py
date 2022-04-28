@@ -11,11 +11,11 @@ WHEEL_DIAMETER = rospy.get_param('/wheel_diameter_model')
 WHEEL_RADIUS = WHEEL_DIAMETER/2.0
 ARENA_SIZE_X = 1.0
 ARENA_SIZE_Y = 1.0
-PATH_FILE_SVG = '/home/pi/catkin_ws/src/moblightdraw/src/SVGtest2.svg'
+PATH_FILE_SVG = 'SVGtest2.svg'
 
 
 def convert_svg_to_path_specs(svg_file, xlength=ARENA_SIZE_X, ylength=ARENA_SIZE_Y):
-    svg_coords = parse_svg_for_paths(svg_file)[0]
+    svg_coords, svg_colors = parse_svg_for_paths(svg_file)
     scaled_coords = scale_coords_to_arena(svg_coords, xlength, ylength)
     path_specs = convert_coords_to_path_specs(scaled_coords)
     
