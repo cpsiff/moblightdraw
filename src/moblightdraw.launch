@@ -26,6 +26,7 @@
   <group ns="robot_control">
     <node pkg="moblightdraw" name="closed_loop_path_follower" type="closed_loop_path_follower.py"/>    
     <node pkg="moblightdraw" name="set_path_to_follow" type="set_path_to_follow.py"/>
+    <node pkg="moblightdraw" name="set_leds" type="set_leds.py"/>
   </group>
   
   
