@@ -9,6 +9,8 @@ import traceback
    
 
 def talker():
+    rospy.init_node('set_leds', anonymous=False)
+
     sub_color = rospy.Subscriber('/led_color', ME439Color, set_led_color)  
 
     if my_stick.begin() == False:
