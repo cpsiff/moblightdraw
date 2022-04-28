@@ -113,9 +113,11 @@ def talker():
             if path_complete.data:
                 return
 
-            color_spec.red = colors[segment_number, 0]
-            color_spec.green = colors[segment_number, 1]
-            color_spec.blue = colors[segment_number, 2]
+            if(segment_number < colors.shape[0]):
+                color_spec.red = colors[segment_number, 0]
+                color_spec.green = colors[segment_number, 1]
+                color_spec.blue = colors[segment_number, 2]
+                
             pub_colors.publish(color_spec)
             
             r.sleep()
