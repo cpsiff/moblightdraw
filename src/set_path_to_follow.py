@@ -21,7 +21,7 @@ def convert_svg_to_path_specs(svg_file, xlength=ARENA_SIZE_X, ylength=ARENA_SIZE
     scaled_coords = scale_coords_to_arena(svg_coords, xlength, ylength)
     path_specs = convert_coords_to_path_specs(scaled_coords)
     
-    return path_specs
+    return path_specs, svg_colors
 
 def parse_svg_for_paths(svg_file):
     all_coords = []
@@ -82,7 +82,7 @@ def convert_coords_to_path_specs(coords):
     return path_specs
 
 def talker(): 
-    global path_specs, segment_number, path_complete
+    global path_specs, segment_number, path_complete, colors
 
     rospy.init_node('set_path_to_follow', anonymous=False)
 
@@ -131,7 +131,7 @@ def increment_segment(msg_in):
 
 robot = m439rbt.robot(WHEEL_WIDTH, BODY_LENGTH, WHEEL_RADIUS)
 
-path_specs = convert_svg_to_path_specs(PATH_FILE_SVG, xlength=1., ylength=1.)
+path_specs, colors = convert_svg_to_path_specs(PATH_FILE_SVG, xlength=1., ylength=1.)
 
 # fix the PATH_SPECS to drive a line from the initial position to start of path
 if not all( path_specs[0,0:2] == robot.r_center_world) :
