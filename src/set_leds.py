@@ -36,5 +36,7 @@ my_stick = qwiic_led_stick.QwiicLEDStick()
 if __name__ == '__main__':
     try: 
         talker()
-    except rospy.ROSInterruptException: 
+        my_stick.LED_off()
+    except rospy.ROSInterruptException:
+        my_stick.LED_off()
         pass
