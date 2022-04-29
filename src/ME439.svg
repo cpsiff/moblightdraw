@@ -1,0 +1,116 @@
+<svg height="500" width="1000">
+  <!-- M -->
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M10 300 20 10"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M20 10 100 150"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M100 150 180 10"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M180 10 190 300"
+  />
+  
+  <!-- E -->
+  <path
+    stroke="rgb(0, 0, 0)" 
+    d="M190 300 240 300"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M240 300 240 10"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M240 10 400 10"
+  />
+  <path
+    stroke="rgb(0, 0, 0)" 
+    d="M400 10 240 150"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M240 150 400 150"
+  />
+  <path
+    stroke="rgb(0, 0, 0)" 
+    d="M400 150 240 300"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M240 300 400 300"
+  />
+  <!-- 4 -->
+  <path
+    stroke="rgb(0, 0, 0)" 
+    d="M400 300 550 300"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M550 300 550 10"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M550 10 450 150"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M450 150 600 150"
+  />
+  <!-- 3 -->
+  <path
+    stroke="rgb(0, 0, 0)" 
+    d="M600 150 650 300"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M650 300 750 300"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M750 300 750 10"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M750 10 650 10"
+  />
+  <path
+    stroke="rgb(0, 0, 0)" 
+    d="M650 10 650 150"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M650 150 750 150"
+  />
+   <!-- 9 -->
+  <path
+    stroke="rgb(0, 0, 0)" 
+    d="M750 150 850 300"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M850 300 950 300"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M950 300 950 10"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M950 10 850 10"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M850 10 850 150"
+  />
+  <path
+    stroke="rgb(255, 0, 0)" 
+    d="M850 150 950 150"
+  />
+</svg>
