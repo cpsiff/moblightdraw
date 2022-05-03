@@ -1,0 +1,53 @@
+<svg height="500" width="1000">
+  <path
+    stroke-width="10"
+    stroke="rgb(255, 255, 0)" 
+    d="M10 300 10 10"
+  />
+  <path
+    stroke-width="10"
+    stroke="rgb(255, 255, 0)" 
+    d="M10 10 300 10"
+  />
+  <path
+    stroke-width="10"
+    stroke="rgb(255, 255, 0)" 
+    d="M300 10 300 300"
+  />
+  <path
+    stroke-width="10"
+    stroke="rgb(255, 255, 0)" 
+    d="M300 300 10 300"
+  />
+  
+  <path
+    stroke-width="10"
+    stroke="rgb(0, 0, 0)" 
+    d="M10 300 80 60"
+  />
+  <path
+    stroke-width="10"
+    stroke="rgb(255, 255, 0)" 
+    d="M80 60 80 150"
+  />
+  <path
+    stroke-width="10"
+    stroke="rgb(0, 0, 0)" 
+    d="M80 150 220 60"
+  />
+  <path
+    stroke-width="10"
+    stroke="rgb(255, 255, 0)" 
+    d="M220 60 220 150"
+  />
+  <path
+    stroke-width="10"
+    stroke="rgb(0, 0, 0)" 
+    d="M220 150 220 225"
+  />
+  <path
+    stroke-width="10"
+    stroke="rgb(255, 255, 0)" 
+    d="M220 225 80 225"
+  />
+</svg>
