@@ -32,8 +32,33 @@ def set_led_color(msg_in):
     green_list = [int(msg_in.green)]*10
     blue_list = [int(msg_in.blue)]*10
 
-    for i in range(10):
-        if i >= msg_in.width:
+    mask = []
+    w = msg_in.width
+    if(w == 0):
+        mask = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    if(w == 1):
+        mask = [0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+    if(w == 2):
+        mask = [0, 0, 0, 0, 1, 1, 0, 0, 0, 0]
+    if(w == 3):
+        mask = [0, 0, 0, 1, 1, 1, 0, 0, 0, 0]
+    if(w == 4):
+        mask = [0, 0, 0, 1, 1, 1, 1, 0, 0, 0]
+    if(w == 5):
+        mask = [0, 0, 1, 1, 1, 1, 1, 0, 0, 0]
+    if(w == 6):
+        mask = [0, 0, 1, 1, 1, 1, 1, 1, 0, 0]
+    if(w == 7):
+        mask = [0, 1, 1, 1, 1, 1, 1, 1, 0, 0]
+    if(w == 8):
+        mask = [0, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+    if(w == 9):
+        mask = [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+    if(w == 10):
+        mask = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+    for i in range(len(mask)):
+        if mask[i] == 0:
             red_list[i] = 0
             green_list[i] = 0
             blue_list[i] = 0
