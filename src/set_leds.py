@@ -28,9 +28,9 @@ def talker():
 def set_led_color(msg_in):
     global my_stick
 
-    red_list = [msg_in.red]*10
-    green_list = [msg_in.green]*10
-    blue_list = [msg_in.blue]*10
+    red_list = [int(msg_in.red)]*10
+    green_list = [int(msg_in.green)]*10
+    blue_list = [int(msg_in.blue)]*10
 
     for i in range(10):
         if i >= msg_in.width:
