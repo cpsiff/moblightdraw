@@ -18,15 +18,16 @@ PATH_FILE_SVG = '/home/pi/catkin_ws/src/moblightdraw/src/SVGtest2.svg'
 
 
 def convert_svg_to_path_specs(svg_file, xlength=ARENA_SIZE_X, ylength=ARENA_SIZE_Y):
-    svg_coords, svg_colors = parse_svg_for_paths(svg_file)
+    svg_coords, svg_colors, svg_widths = parse_svg_for_paths(svg_file)
     scaled_coords = scale_coords_to_arena(svg_coords, xlength, ylength)
     path_specs = convert_coords_to_path_specs(scaled_coords)
     
-    return path_specs, svg_colors
+    return path_specs, svg_colors, svg_widths
 
 def parse_svg_for_paths(svg_file):
     all_coords = []
     all_colors = []
+    all_widths = []
     with open(svg_file,'r') as svgfile:
         for line in svgfile:
             l = line.strip()
@@ -38,8 +39,11 @@ def parse_svg_for_paths(svg_file):
                 color = l[12:-2].split(" ")
                 color = [int(x.strip(",")) for x in color]
                 all_colors.append(color)
+            elif(l[0:13] == 'stroke-width='):
+                width = int((l[14:].split('"'))[0])
+                all_widths.append(width)
                 
-    return(np.array(all_coords), np.array(all_colors))
+    return(np.array(all_coords), np.array(all_colors), np.array(all_widths))
 
 def scale_coords_to_arena(coords, dx, dy):
     xsvg = coords[:,0]
@@ -83,7 +87,7 @@ def convert_coords_to_path_specs(coords):
     return path_specs
 
 def talker(): 
-    global path_specs, segment_number, path_complete, colors
+    global path_specs, segment_number, path_complete, colors, widths
 
     rospy.init_node('set_path_to_follow', anonymous=False)
 
@@ -117,6 +121,7 @@ def talker():
                 color_spec.red = colors[segment_number, 0]
                 color_spec.green = colors[segment_number, 1]
                 color_spec.blue = colors[segment_number, 2]
+                color_spec.width = widths[segment_number]
                 
             pub_colors.publish(color_spec)
             
@@ -143,7 +148,7 @@ def increment_segment(msg_in):
 
 robot = m439rbt.robot(WHEEL_WIDTH, BODY_LENGTH, WHEEL_RADIUS)
 
-path_specs, colors = convert_svg_to_path_specs(PATH_FILE_SVG, xlength=1., ylength=1.)
+path_specs, colors, widths = convert_svg_to_path_specs(PATH_FILE_SVG, xlength=1., ylength=1.)
 
 # fix the PATH_SPECS to drive a line from the initial position to start of path
 if not all( path_specs[0,0:2] == robot.r_center_world) :

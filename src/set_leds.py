@@ -28,7 +28,17 @@ def talker():
 def set_led_color(msg_in):
     global my_stick
 
-    my_stick.set_all_LED_color(int(msg_in.red), int(msg_in.green), int(msg_in.blue))
+    red_list = [msg_in.red]*10
+    green_list = [msg_in.green]*10
+    blue_list = [msg_in.blue]*10
+
+    for i in range(10):
+        if i >= msg_in.width:
+            red_list[i] = 0
+            green_list[i] = 0
+            blue_list[i] = 0
+
+    my_stick.set_all_LED_unique_color(red_list, green_list, blue_list, 10)
 
 
 my_stick = qwiic_led_stick.QwiicLEDStick()
