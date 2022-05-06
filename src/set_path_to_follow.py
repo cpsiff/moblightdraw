@@ -117,12 +117,16 @@ def talker():
             if path_complete.data:
                 return
 
-            if(segment_number < colors.shape[0]):
-                color_spec.red = colors[segment_number, 0]
-                color_spec.green = colors[segment_number, 1]
-                color_spec.blue = colors[segment_number, 2]
-                color_spec.width = widths[segment_number]
+            print("segment num", segment_number)
+            print("colors.shape[0]", colors.shape[0])
+            if(segment_number <= colors.shape[0]):
+                color_spec.red = colors[segment_number-1, 0]
+                color_spec.green = colors[segment_number-1, 1]
+                color_spec.blue = colors[segment_number-1, 2]
+                color_spec.width = widths[segment_number-1]
                 
+            print("color_spec", color_spec)
+            print()
             pub_colors.publish(color_spec)
             
             r.sleep()
@@ -150,9 +154,11 @@ robot = m439rbt.robot(WHEEL_WIDTH, BODY_LENGTH, WHEEL_RADIUS)
 
 path_specs, colors, widths = convert_svg_to_path_specs(PATH_FILE_SVG, xlength=1., ylength=1.)
 
+print(colors)
+
 # fix the PATH_SPECS to drive a line from the initial position to start of path
-if not all( path_specs[0,0:2] == robot.r_center_world) :
-    path_specs = np.append(np.array([robot.specify_line(robot.r_center_world[0], robot.r_center_world[1],path_specs[0,0],path_specs[0,1])]),path_specs,axis=0)
+# if not all( path_specs[0,0:2] == robot.r_center_world) :
+#     path_specs = np.append(np.array([robot.specify_line(robot.r_center_world[0], robot.r_center_world[1],path_specs[0,0],path_specs[0,1])]),path_specs,axis=0)
 
 segment_number = 0
 path_complete = Bool()

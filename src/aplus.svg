@@ -2,66 +2,61 @@
   <path
     stroke-width="5"
     stroke="rgb(0, 0, 0)" 
-    d="M10 320 10 300"
+    d="M10 210 10 200"
   />
   <path
     stroke-width="5"
-    stroke="rgb(255, 255, 0)" 
-    d="M10 300 10 10"
+    stroke="rgb(255, 0, 0)" 
+    d="M10 200 70 10"
   />
   <path
     stroke-width="5"
-    stroke="rgb(255, 255, 0)" 
-    d="M10 10 300 10"
-  />
-  <path
-    stroke-width="5"
-    stroke="rgb(255, 255, 0)" 
-    d="M300 10 300 300"
-  />
-  <path
-    stroke-width="5"
-    stroke="rgb(255, 255, 0)" 
-    d="M300 300 10 300"
+    stroke="rgb(255, 0, 0)" 
+    d="M70 10 130 200"
   />
   <path
     stroke-width="5"
     stroke="rgb(0, 0, 0)" 
-    d="M10 300 10 225"
+    d="M130 200 10 200"
   />
   <path
     stroke-width="5"
     stroke="rgb(0, 0, 0)" 
-    d="M10 225 80 225"
+    d="M10 200 40 110"
   />
   <path
     stroke-width="5"
-    stroke="rgb(255, 255, 0)" 
-    d="M80 225 220 225"
-  />
-  <path
-    stroke-width="5"
-    stroke="rgb(0, 0, 0)" 
-    d="M220 225 220 150"
-  />
-  <path
-    stroke-width="5"
-    stroke="rgb(255, 255, 0)" 
-    d="M220 150 220 60"
+    stroke="rgb(255, 0, 0)" 
+    d="M40 110 100 110"
   />
   <path
     stroke-width="5"
     stroke="rgb(0, 0, 0)" 
-    d="M220 60 80 60"
+    d="M100 110 150 110"
   />
   <path
     stroke-width="5"
-    stroke="rgb(255, 255, 0)" 
-    d="M80 60 80 150"
+    stroke="rgb(0, 255, 0)" 
+    d="M150 110 280 110"
   />
   <path
     stroke-width="5"
     stroke="rgb(0, 0, 0)" 
-    d="M80 150 80 170"
+    d="M280 110 280 35"
+  />
+  <path
+    stroke-width="5"
+    stroke="rgb(0, 0, 0)" 
+    d="M280 35 240 20"
+  />
+  <path
+    stroke-width="5"
+    stroke="rgb(0, 255, 0)" 
+    d="M240 20 210 180"
+  />
+  <path
+    stroke-width="5"
+    stroke="rgb(0, 0, 0)" 
+    d="M210 180 210 200"
   />
 </svg>
